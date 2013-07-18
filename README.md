@@ -1,7 +1,7 @@
 routerjs
 ========
 
-router.js is a tiny script to create a handler of routes like (and based on) the Backbone Router but *without* any dependencies rather than jQuery.
+router.js is a tiny script to create a handler of routes like (and based on) the Backbone Router but **without** any dependencies rather than jQuery.
 
 usage example
 =============
