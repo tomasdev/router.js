@@ -7,18 +7,18 @@ usage example
 =============
 
 ```javascript
-    var router = new Router({
-        routes: {
-            '#!/:id':   'getItem',
-            '*default': 'defaultHandler'
-        },
-        getItem: function (id) {
-            // Do something with the ID.
-        },
-        defaultHandler: function () {
-            // This will get called on any invalid or not configured route.
-        }
-    });
+var router = new Router({
+    routes: {
+        '#!/:id':   'getItem',
+        '*default': 'defaultHandler'
+    },
+    getItem: function (id) {
+        // Do something with the ID.
+    },
+    defaultHandler: function () {
+        // This will get called on any invalid or not configured route.
+    }
+});
 ```
 
 
