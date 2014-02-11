@@ -11,7 +11,7 @@
             this.fragment = this.getFragment();
 
             if ('onhashchange' in global) {
-                global.addEventListener('hashchange', this.checkUrl.bind(this), false)
+                global.addEventListener('hashchange', this.checkUrl.bind(this), false);
             } else {
                 throw new Error('Your browser doesn\'t support hashchange');
             }
