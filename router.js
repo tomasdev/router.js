@@ -57,7 +57,7 @@
 
         parse: function () {
             var router = this;
-            Object.keys(router.routes).forEach(function (pattern) {
+            for (var pattern in router.routes) {
                 var handler = router.routes[pattern],
                     fragment = router.history.fragment,
                     params;
@@ -88,7 +88,7 @@
 
                     return false;
                 }
-            });
+            }
         },
 
         navigate: function (hash) {
