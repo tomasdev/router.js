@@ -25,8 +25,8 @@
 
     History.prototype = {
         getFragment: function (url) {
-            url = url || global.location.href;
-            return '#' + url.replace(/^[^#]*#?(.*)$/, '$1');
+            url = (url || global.location.href).replace(/^[^#]*#?(.*)$/, '$1');
+            return url ? '#' + url : '';
         },
         checkUrl: function () {
             var current = this.getFragment();
@@ -76,6 +76,8 @@
                     params = params.slice(1).map(function (param) {
                         return param ? decodeURIComponent(param) : null;
                     });
+
+                    console.log(router, params, '------');
 
                     try {
                         handler.apply(router, params);
