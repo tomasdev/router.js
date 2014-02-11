@@ -77,8 +77,6 @@
                         return param ? decodeURIComponent(param) : null;
                     });
 
-                    console.log(router, params, '------');
-
                     try {
                         handler.apply(router, params);
                     } catch (e) {
