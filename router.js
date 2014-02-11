@@ -1,27 +1,25 @@
 /*jshint evil:false, browser:true, jquery:true, strict:true, bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true, immed:true, indent:4, latedef:true, newcap:true, noarg:true, noempty:true, nonew:true, quotmark:"single", undef:true, unused:true, trailing:true, maxparams:3 */
 /*global Exception*/
 
+// TODO: For IE8 support, only `.bind()` polyfill is needed.
+
 (function (global) {
     'use strict';
 
-    var $ = global.jQuery,
-        $window = $(window),
-        History = function (loadUrl) {
+    var History = function (loadUrl) {
             this.loadUrl = loadUrl;
             this.fragment = this.getFragment();
 
             if ('onhashchange' in global) {
-                $window.on('hashchange', $.proxy(this.checkUrl, this));
+                global.addEventListener('hashchange', this.checkUrl.bind(this), false)
             } else {
-                // Creepy IE8. Sadly if user clicks reaaaally fast,
-                // might not be able to see the correct content.
-                setInterval($.proxy(this.checkUrl, this), 50);
+                throw new Error('Your browser doesn\'t support hashchange');
             }
         },
         Router = function (options) {
             this.options = options;
             this.routes = options.routes;
-            this.history = new History($.proxy(this.parse, this));
+            this.history = new History(this.parse.bind(this));
             this.parse();
         };
 
@@ -59,8 +57,9 @@
 
         parse: function () {
             var router = this;
-            $.each(router.routes, function (pattern, handler) {
-                var fragment = router.history.fragment,
+            Object.keys(router.routes).forEach(function (pattern) {
+                var handler = router.routes[pattern],
+                    fragment = router.history.fragment,
                     params;
 
                 pattern = router.routeToRegExp(pattern);
@@ -74,7 +73,7 @@
 
                 if (params) {
                     // Splice 1 which is the fragment itself
-                    params = $.map(params.slice(1), function (param) {
+                    params = params.slice(1).map(function (param) {
                         return param ? decodeURIComponent(param) : null;
                     });
 
@@ -99,4 +98,4 @@
     };
 
     global.Router = Router;
-}(window));
+} (window));
