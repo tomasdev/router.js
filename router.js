@@ -1,4 +1,4 @@
-/* jshint evil:false, browser:true, jquery:true, strict:true, bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true, immed:true, indent:4, latedef:true, newcap:true, noarg:true, noempty:true, nonew:true, quotmark:"single", undef:true, unused:true, trailing:true, maxparams:3 */
+/* jshint evil:false, browser:true, jquery:true, strict:true, bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true, immed:true, indent:4, latedef:true, newcap:true, noarg:true, noempty:true, nonew:true, quotmark:single, undef:true, unused:true, trailing:true, maxparams:3 */
 
 // TODO: For IE8 support, only `.bind()` polyfill is needed.
 
@@ -98,28 +98,30 @@
                 };
 
             for (var pattern in router.routes) {
-                var handler = router.routes[pattern],
-                    fragment = router.history.fragment,
-                    params;
+                if (router.routes.hasOwnProperty(pattern)) {
+                    var handler = router.routes[pattern],
+                        fragment = router.history.fragment,
+                        params;
 
-                pattern = router.routeToRegExp(pattern);
-                params = fragment.match(pattern);
+                    pattern = router.routeToRegExp(pattern);
+                    params = fragment.match(pattern);
 
-                if (typeof handler === 'string') {
-                    handler = router.options[handler];
-                }
+                    if (typeof handler === 'string') {
+                        handler = router.options[handler];
+                    }
 
-                if (typeof handler !== 'function' && params) {
-                    throw new Error('Given handler for ' + pattern + ' in Router configuration is invalid.');
-                }
+                    if (typeof handler !== 'function' && params) {
+                        throw new Error('Given handler for ' + pattern + ' in Router configuration is invalid.');
+                    }
 
-                if (params) {
-                    // Splice 1 which is the fragment itself
-                    params = params.slice(1).map(mapper);
+                    if (params) {
+                        // Splice 1 which is the fragment itself
+                        params = params.slice(1).map(mapper);
 
-                    handler.apply(router, params);
+                        handler.apply(router, params);
 
-                    return false;
+                        return false;
+                    }
                 }
             }
         },
