@@ -1,12 +1,13 @@
 /*jshint evil:false, browser:true, jquery:true, strict:true, bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true, immed:true, indent:4, latedef:true, newcap:true, noarg:true, noempty:true, nonew:true, quotmark:"single", undef:true, unused:true, trailing:true, maxparams:3 */
-/*global Exception*/
 
 // TODO: For IE8 support, only `.bind()` polyfill is needed.
 
 (function (global) {
     'use strict';
 
-    var History = function (loadUrl) {
+    var DEBUG = global.DEBUG || location.host.indexOf('local') === 0,
+    
+        History = function (loadUrl) {
             this.loadUrl = loadUrl;
             this.fragment = this.getFragment();
 
@@ -16,6 +17,7 @@
                 throw new Error('Your browser doesn\'t support hashchange');
             }
         },
+        
         Router = function (options) {
             this.options = options;
             this.routes = options.routes;
@@ -28,6 +30,7 @@
             url = (url || global.location.href).replace(/^[^#]*#?(.*)$/, '$1');
             return url ? '#' + url : '';
         },
+
         checkUrl: function () {
             var current = this.getFragment();
             if (current === this.fragment) {
@@ -68,7 +71,7 @@
                 if (typeof handler === 'string') {
                     handler = router.options[handler];
                 } else if (typeof handler !== 'function') {
-                    throw new Exception('Given handler for ' + pattern + ' in Router configuration is invalid.');
+                    throw new Error('Given handler for ' + pattern + ' in Router configuration is invalid.');
                 }
 
                 if (params) {
@@ -83,6 +86,10 @@
                         // e.stack is available
                         if (handler !== 'defaultHandler') {
                             router.options.defaultHandler();
+                        }
+
+                        if (typeof DEBUG === 'boolean' && DEBUG) {
+                            throw e;
                         }
                     }
 
