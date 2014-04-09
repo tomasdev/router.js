@@ -132,6 +132,7 @@
          */
         navigate: function (hash) {
             global.location.href = hash;
+            this.history.checkUrl();
             this.parse();
         }
     };
