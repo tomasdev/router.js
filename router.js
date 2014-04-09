@@ -7,12 +7,6 @@
 
     var
         /**
-         * Flag to detect environment for throwing errors instead of silently dropping to the default handler.
-         * @type {boolean}
-         */
-        DEBUG = global.DEBUG || location.host.indexOf('local') === 0,
-
-        /**
          * Store for fragments, listens to `hashchange`
          * @class
          * @constructor
@@ -34,7 +28,8 @@
          * @class
          * @constructor
          * @param     {object}   options        As explained below
-         *     @param {object}   routes         Map with semi-RegEx syntax strings as keys and handler's name strings as values
+         *     @param {object}   routes         Map with semi-RegEx syntax strings as keys, and handler's name (string) or
+         *                                      handler's function as values. A special key `*default` can be used to match any.
          *     @param {function} defaultHandler Method to call in case of failure.
          *     @param {function} handler*       Method to call matching a value from `routes` map.
          */
@@ -94,9 +89,13 @@
         /**
          * Evaluates if any pattern (in the given `options.routes`) matches against current URL.
          * Whenever a valid handler throws an exception or no handler was found, triggers `options.defaultHandler`
+         * The default handler will receive the exception as argument.
          */
         parse: function () {
-            var router = this;
+            var router = this,
+                mapper = function (param) {
+                    return param ? decodeURIComponent(param) : null;
+                };
 
             for (var pattern in router.routes) {
                 var handler = router.routes[pattern],
@@ -108,28 +107,17 @@
 
                 if (typeof handler === 'string') {
                     handler = router.options[handler];
-                } else if (typeof handler !== 'function') {
+                }
+
+                if (typeof handler !== 'function' && params) {
                     throw new Error('Given handler for ' + pattern + ' in Router configuration is invalid.');
                 }
 
                 if (params) {
                     // Splice 1 which is the fragment itself
-                    params = params.slice(1).map(function (param) {
-                        return param ? decodeURIComponent(param) : null;
-                    });
+                    params = params.slice(1).map(mapper);
 
-                    try {
-                        handler.apply(router, params);
-                    } catch (e) {
-                        // e.stack is available
-                        if (handler !== 'defaultHandler') {
-                            router.options.defaultHandler();
-                        }
-
-                        if (typeof DEBUG === 'boolean' && DEBUG) {
-                            throw e;
-                        }
-                    }
+                    handler.apply(router, params);
 
                     return false;
                 }
